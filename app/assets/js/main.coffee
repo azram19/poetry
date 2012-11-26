@@ -1,1 +1,2 @@
-
+$ ->
+	myScroll = new iScroll 'wrapper'
