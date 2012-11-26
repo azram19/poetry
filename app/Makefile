@@ -1,3 +1,3 @@
 app:
-	coffee --compile --output public/js/ assets/js/
-	lessc -x assets/css/style.less > public/css/style.css
+	./node_modules/.bin/coffee --compile --output public/js/ assets/js/
+	./node_modules/.bin/lessc -x assets/css/style.less > public/css/style.css

@@ -12,6 +12,8 @@
     "redis" : "*",
     "mongodb": "*",
     "hbs":"*",
-    "jquery":"*"
+    "jquery":"*",
+    "coffee-script": "*",
+    "less" : "*"
   }
 }
