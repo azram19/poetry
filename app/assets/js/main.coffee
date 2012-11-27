@@ -1,2 +1,5 @@
 $ ->
-	myScroll = new iScroll 'wrapper'
+	#myScroll = new iScroll 'wrapper'
+
+  app = new window.Poetry.Poetry()
+  app.start()

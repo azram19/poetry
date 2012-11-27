@@ -32,7 +32,7 @@ hbs.registerHelper('block', function(name) {
 });
 
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', 80);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'hbs');
   app.use(express.favicon());

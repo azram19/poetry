@@ -27,43 +27,20 @@
         <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
         -->
 
-        <!--<link rel="stylesheet" href="/css/normalize.css">-->
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/normalize.css">
+        <link rel="stylesheet" href="/css/fluid_grid.css">
         <link rel="stylesheet" href="/css/style.css">
         <script src="js/vendor/modernizr-2.6.1.min.js"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.load.min.js"></script>
+        <script src="js/vendor/head.load.min.js"></script>
+
+        <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.load.min.js"></script>-->
     </head>
     <body>
         <div id="fb-root"></div>
-        <script>
-          window.fbAsyncInit = function() {
-            // init the FB JS SDK
-            FB.init({
-              appId      : '451066384928829', // App ID from the App Dashboard
-              channelUrl : '//localhost/channel.html', // Channel File for x-domain communication
-              status     : true, // check the login status upon init?
-              cookie     : true, // set sessions cookies to allow your server to access the session?
-              xfbml      : true  // parse XFBML tags on this page?
-            });
+        <div id="poetry">
+          {{{body}}}
+        </div>
 
-            // Additional initialization code such as adding Event Listeners goes here
-
-          };
-
-          // Load the SDK's source Asynchronously
-          // Note that the debug version is being actively developed and might 
-          // contain some type checks that are overly strict. 
-          // Please report such bugs using the bugs tool.
-          (function(d, debug){
-             var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-             if (d.getElementById(id)) {return;}
-             js = d.createElement('script'); js.id = id; js.async = true;
-             js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
-             ref.parentNode.insertBefore(js, ref);
-           }(document, /*debug*/ false));
-        </script>
-
-        {{{body}}}
         <!-- Add your site or application content here -->
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
@@ -79,10 +56,48 @@
                 "/js/vendor/backbone-min.js",
                 "/js/vendor/stash.min.js",
                 "/js/vendor/jquery.hammer.js",
-                "/js/vendor/handlebars.runtime-1.0.rc.1.min.js"
+                "/js/vendor/handlebars.runtime-1.0.rc.1.min.js",
+                "/js/init.js",
+                "/js/models/poem.js",
+                "/js/collections/poems.js",
+                "/js/templates/authorize.tmpl.min.js",
+                "/js/templates/poetry.tmpl.min.js",
+                "/js/views/poetry.js",
+                "/js/views/authorize.js",
+                "/js/modules/authorize.js",
+                "/js/modules/poetry.js",
+                "/js/mediator.js",
+                "/js/router.js",
                 "/js/main.js"
+
                 );
 
+        </script>
+        <script>
+          window.fbAsyncInit = function() {
+            // init the FB JS SDK
+            FB.init({
+              appId      : '451066384928829',
+              channelUrl : '//youny.net/channel.html',
+              status     : true,
+              cookie     : true,
+              xfbml      : true
+            });
+
+            window.Poetry.channel.trigger("fb:init")
+          };
+
+          // Load the SDK's source Asynchronously
+          // Note that the debug version is being actively developed and might
+          // contain some type checks that are overly strict.
+          // Please report such bugs using the bugs tool.
+          (function(d, debug){
+             var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement('script'); js.id = id; js.async = true;
+             js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
+             ref.parentNode.insertBefore(js, ref);
+           }(document, /*debug*/ false));
         </script>
     </body>
 </html>
