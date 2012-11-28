@@ -1,5 +1,5 @@
 class AuthorizeView extends Backbone.View
-  el: "#poetry"
+  el: "#poetry .pages"
 
   authorize: () =>
     @channel.trigger "authorize:do"
@@ -14,8 +14,10 @@ class AuthorizeView extends Backbone.View
       @rendered = true
       @$el = $ @el
 
-      @$el.html @template()
+      $html = $ @template()
+      $html.appendTo @$el
 
+      @channel.trigger "render", $html
       @$el.on "click", ".fb-button", @authorize
 
 

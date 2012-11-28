@@ -35,7 +35,10 @@ a{
 
 #poetry{
   min-height:100%;
-  background:#fff url("../img/linedpaper.png");
+
+}
+#viewCenterlogo{
+
 }
 #centerlogo{
   height:300px;
@@ -85,6 +88,17 @@ a{
     }
   }
 }
+.bg-2, .bg-2 .sl-slide-inner,
+.bg-2 .sl-content-slice {
+  height:100%;
+  background:url("../img/linedpaper.png");
+}
+.bg-1, .bg-1 .sl-slide-inner,
+.bg-1 .sl-content-slice{
+  height:100%;
+  background:@light_brown;
+}
+
 #view{
   width:100%;
   overflow:hidden;
@@ -94,7 +108,7 @@ a{
     font-size:26px;
     line-height:32px;
     text-align:center;
-    background:#eee;
+    background:@red;
 
     & > div{
   		float:left;
@@ -118,6 +132,28 @@ a{
       }
   	}
   }
+}
+
+.animated-1{
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  -ms-animation-duration: 1s;
+  -o-animation-duration: 1s;
+  animation-duration: 1s;
+}
+.animated-2{
+  -webkit-animation-duration: 1.5s;
+  -moz-animation-duration: 1.5s;
+  -ms-animation-duration: 1.5s;
+  -o-animation-duration: 1.5s;
+  animation-duration: 1.5s;
+}
+.animated-3{
+  -webkit-animation-duration: 2s;
+  -moz-animation-duration: 2s;
+  -ms-animation-duration: 2s;
+  -o-animation-duration: 2s;
+  animation-duration: 2s;
 }
 
 ul#home{

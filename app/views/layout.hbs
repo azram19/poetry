@@ -29,6 +29,11 @@
 
         <link rel="stylesheet" href="/css/normalize.css">
         <link rel="stylesheet" href="/css/fluid_grid.css">
+        <link rel="stylesheet" href="/css/animate-custom.css">
+        <link rel="stylesheet" href="/css/slitslider/style.css">
+        <noscript>
+          <link rel="stylesheet" type="text/css" href="css/styleNoJS.css" />
+        </noscript>
         <link rel="stylesheet" href="/css/style.css">
         <script src="js/vendor/modernizr-2.6.1.min.js"></script>
         <script src="js/vendor/head.load.min.js"></script>
@@ -37,8 +42,10 @@
     </head>
     <body>
         <div id="fb-root"></div>
-        <div id="poetry">
-          {{{body}}}
+        <div id="poetry" class="sl-slider-wrapper">
+          <div class="sl-slider pages">
+            {{{body}}}
+          </div>
         </div>
 
         <!-- Add your site or application content here -->
@@ -57,9 +64,12 @@
                 "/js/vendor/stash.min.js",
                 "/js/vendor/jquery.hammer.js",
                 "/js/vendor/handlebars.runtime-1.0.rc.1.min.js",
+                "/js/jquery.ba-cond.min.js",
+                "/js/jquery.slitslider.js",
                 "/js/init.js",
                 "/js/models/poem.js",
                 "/js/collections/poems.js",
+                "/js/templates/index.tmpl.min.js",
                 "/js/templates/authorize.tmpl.min.js",
                 "/js/templates/poetry.tmpl.min.js",
                 "/js/views/poetry.js",

@@ -11,7 +11,8 @@ class Mediator
     #Limit channel API to triggerring events
     self = @
     return {
-      'trigger' : ( ev, d ) -> self.channel.trigger ev, d
+      'trigger' : (ev, d, d1, d2, d3) ->
+        self.channel.trigger ev, d, d1, d2, d3
     }
   eventHandler: ( eventName ) =>
     console.log "[Mediator] - event", eventName

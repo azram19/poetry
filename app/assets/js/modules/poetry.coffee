@@ -17,6 +17,22 @@ class Poetry
             self.authDoCalls++
           else
             null
+        "true": ( user ) ->
+          #self.user = new window.Poetry.User user
+          self.view.render()
+      "render" : ( event, $html, view ) ->
+        console.log $html
+        $slides = $html.filter( "div.sl-slide" )
+
+        if $slides.length > 0
+          window.Poetry.Slider.add $slides, ( args ) ->
+            if args.length < 2
+              args.first().show()
+            else
+              window.Poetry.Slider.next()
+              console.log view
+              if view
+                view.show()
 
     @view = new window.Poetry.Views['poetry'] channel:@channel
 

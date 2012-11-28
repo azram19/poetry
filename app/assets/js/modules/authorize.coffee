@@ -16,14 +16,16 @@ class Authorize
       "route":
         "index": () -> self.view.render()
 
+    $.when( @fbReady ).then () =>
+      FB.Event.subscribe "auth.login", @authorized
+      FB.Event.subscribe "auth.statusChange", @statusChange
+
   isAuthorized: =>
     if not @authorized
-      $.when(@fbReady).then () =>
+      $.when( @fbReady ).then () =>
         $.when( @facebookAuthorizeIs() ).then (status) =>
           if status is 'connected'
-            @authorized = true
-            $.when( @facebookGetUser() ).then ( user ) =>
-              @channel.trigger "authorize:true", user
+            @facebookAuthorized()
           else
             @channel.trigger "authorize:false"
     else
@@ -32,10 +34,16 @@ class Authorize
   authorize: =>
     @facebookAuthorize()
 
-  facebookAuthorizeIs: =>
+  authorized: (res) =>
+    console.log "authorized", res
 
+  statusChange: (res) =>
+    if res.status is "connected"
+      @facebookAuthorized()
+
+  facebookAuthorizeIs: =>
     FB.getLoginStatus (res) ->
-      return res.status
+      res.status
 
   facebookGetUser: =>
     fbUserDefer = $.Deferred()
@@ -49,14 +57,15 @@ class Authorize
   facebookAuthorize: =>
     FB.login (res) =>
       if res.status
-        @authorized = true
-        $.when( @facebookGetUser() ).then ( user ) =>
-          @channel.trigger "authorize:true", user
+        @facebookAuthorized()
       else
         @channel.trigger "authorize:false"
     , scope:'email'
 
-
+  facebookAuthorized: =>
+    @authorized = true
+    $.when( @facebookGetUser() ).then ( user ) =>
+      @channel.trigger "authorize:true", user
 
 
 window.Poetry.Modules["authorize"] = Authorize
