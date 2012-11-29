@@ -17,11 +17,15 @@ class Poetry
             self.authDoCalls++
           else
             null
-        "true": ( user ) ->
-          #self.user = new window.Poetry.User user
-          self.view.render()
+        "true": ( event, user ) ->
+          self.user = new window.Poetry.User user
+          $.when( self.checkUser user.id, self.user ).then ( old ) ->
+            if old
+              self.user.fetch success: () -> self.view.render()
+            else
+              self.user.save success: () -> self.view.render()
+
       "render" : ( event, $html, view ) ->
-        console.log $html
         $slides = $html.filter( "div.sl-slide" )
 
         if $slides.length > 0
@@ -30,7 +34,6 @@ class Poetry
               args.first().show()
             else
               window.Poetry.Slider.next()
-              console.log view
               if view
                 view.show()
 
@@ -43,7 +46,16 @@ class Poetry
     new window.Poetry.Router channel:@channel
 
     @channel.trigger "authorize:is"
+  checkUser: (facebookId, user) =>
+    fbUserDefer = $.Deferred()
 
+    $.getJSON( "/api/auth/#{ facebookId }").then ( res ) =>
+      if res and res.email is user.get("email") and user.get("id") is res.id
+        fbUserDefer.resolve true
+      else
+        fbUserDefer.resolve false
+
+    fbUserDefer.promise()
   start: =>
     Backbone.history.start();
 

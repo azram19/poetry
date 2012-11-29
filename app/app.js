@@ -5,12 +5,28 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , user = require('./routes/user')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , mongoose = require('mongoose');
 
 var app = express();
 var hbs = require('hbs');
+
+mongoose.connect('mongodb://poetry:kotek@ds043447.mongolab.com:43447/heroku_app9514719');
+
+var User = mongoose.model('User', new mongoose.Schema({
+  email: String,
+  first_name: String,
+  last_name: String,
+  id: String,
+  username: String,
+  poems: Array
+}));
+var Poem = mongoose.model('Poem', new mongoose.Schema({
+  author: String,
+  title: String,
+  content: String
+}, { collection: 'poems-poema' }));
 
 var blocks = {};
 
@@ -50,8 +66,73 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/users', user.list);
-
+app.get('/api/users', function(req, res){
+  return User.find(function(err, users) {
+    return res.send(users);
+  });
+});
+app.get('/api/poems', function(req, res){
+  return Poem.find(function(err, poems) {
+    return res.send(poems);
+  });
+});
+app.get('/api/users/:id', function(req, res){
+  return User.findById(req.params.id, function(err, user) {
+    if (!err) {
+      return res.send(user);
+    }
+  });
+});
+app.get('/api/auth/:id', function(req, res){
+  return User.findOne({id: req.params.id}, function(err, user) {
+    if (!err) {
+      return res.send(user);
+    }
+  });
+});
+app.put('/api/users/:id', function(req, res){
+  return User.findById(req.params.id, function(err, user) {
+    user.email = req.body.email;
+    user.first_name = req.body.first_name;
+    user.last_name = req.body.last_name;
+    user.id = req.body.id;
+    user.username = req.body.username;
+    user.poems = req.body.poems;
+    return user.save(function(err) {
+      if (!err) {
+        console.log('updated');
+      }
+      return res.send(user);
+    });
+  });
+});
+app.post('/api/users', function(req, res){
+  var user;
+  user = new User({
+    email : req.body.email,
+    first_name : req.body.first_name,
+    last_name : req.body.last_name,
+    id : req.body.id,
+    username : req.body.username,
+    poems : req.body.poems
+  });
+  user.save(function(err) {
+    if (!err) {
+      return console.log('created');
+    }
+  });
+  return res.send(user);
+});
+app.delete('/api/users/:id', function(req, res){
+  return User.findById(req.params.id, function(err, user) {
+    return user.remove(function(err) {
+      if (!err) {
+        console.log('removed');
+        return res.send('')
+      }
+    });
+  });
+});
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });

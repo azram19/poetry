@@ -15,7 +15,7 @@ class Mediator
         self.channel.trigger ev, d, d1, d2, d3
     }
   eventHandler: ( eventName ) =>
-    console.log "[Mediator] - event", eventName
+    console.log "[Mediator] - event", eventName, arguments
 
     eventPath = pathElements = eventName.split ":"
     eventPath = _.filter eventPath, ( path ) ->

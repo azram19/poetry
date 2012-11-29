@@ -49,7 +49,6 @@ class Authorize
     fbUserDefer = $.Deferred()
 
     FB.api "/me", ( res ) ->
-      console.log res
       fbUserDefer.resolve res
 
     fbUserDefer.promise()
