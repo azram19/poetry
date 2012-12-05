@@ -27,7 +27,7 @@ class PoetryView extends Backbone.View
   render: () =>
     $index = $ @templates["index"]()
     $html = $( @templates["main"] poems:@collection.toJSON() )
-    $html.appendTo $index.find(" #scroller ")
+    $html.appendTo $index.find(" #main ")
     $index.appendTo @$el
 
 

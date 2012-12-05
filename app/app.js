@@ -7,12 +7,26 @@ var express = require('express')
   , routes = require('./routes')
   , http = require('http')
   , path = require('path')
-  , mongoose = require('mongoose');
+  , mongoose = require('mongoose')
+  , url = require('url');
+
+
+var Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
+
+var ElasticSearchClient = require('elasticsearchclient');
+var connectionString = url.parse('http://api.searchbox.io/api-key/<key>');
+
+var serverOptions = {
+    host:connectionString.hostname,
+    path:connectionString.pathname,
+};
+var elasticSearchClient = new ElasticSearchClient(serverOptions);
 
 var app = express();
 var hbs = require('hbs');
 
-mongoose.connect('mongodb://poetry:kotek@ds043447.mongolab.com:43447/heroku_app9514719');
+mongoose.connect('<connection_string>');
 
 var User = mongoose.model('User', new mongoose.Schema({
   email: String,
@@ -20,13 +34,24 @@ var User = mongoose.model('User', new mongoose.Schema({
   last_name: String,
   id: String,
   username: String,
-  poems: Array
+  poems: [ObjectId],
+  friends: [ObjectId]
 }));
+
 var Poem = mongoose.model('Poem', new mongoose.Schema({
   author: String,
   title: String,
   content: String
 }, { collection: 'poems-poema' }));
+
+var UserPoem = mongoose.model('UserPoem', new mongoose.Schema({
+  user: ObjectId,
+  poem: ObjectId,
+  read: Boolean,
+  toRead: Boolean,
+  readList: Boolean,
+  mark: Number
+}, { collection: 'poems-user' }));
 
 var blocks = {};
 
@@ -65,17 +90,52 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
+app.get( '/', routes.index );
+app.get( '/api/search', function( req, res ){
+  return Poem.find({}, function( err, poems ) {
+    return res.send( poems );
+  });
+});
 app.get('/api/users', function(req, res){
   return User.find(function(err, users) {
     return res.send(users);
   });
 });
+
 app.get('/api/poems', function(req, res){
   return Poem.find(function(err, poems) {
     return res.send(poems);
   });
 });
+
+app.get('/api/poems/search', function(req, res){
+  return Poem.find(function(err, poems) {
+    return elasticSearchClient.search('poems', 'poem',
+        {"query" : { "query_string" : {"query" : req.query.q}}}
+      )
+      .on('data', function(data) {
+          console.log(data);
+          return res.send(data);
+      })
+      .on('done', function(){
+          return res.send({});
+      })
+      .on('error', function(error){
+          console.log(error)
+          return res.send({});
+      })
+      .exec()
+  });
+});
+
+app.get('/api/poems/:id', function(req, res){
+  return Poem.findById(req.params.id, function(err, poem) {
+    if (!err) {
+      return res.send(poem);
+    }
+  });
+});
+
 app.get('/api/users/:id', function(req, res){
   return User.findById(req.params.id, function(err, user) {
     if (!err) {
@@ -83,6 +143,15 @@ app.get('/api/users/:id', function(req, res){
     }
   });
 });
+
+app.get('/api/users/:id/poems', function(req, res){
+  return UserPoem.find({user: req.params.id}, function(err, poems) {
+    if (!err) {
+      return res.send(poems);
+    }
+  });
+});
+
 app.get('/api/auth/:id', function(req, res){
   return User.findOne({id: req.params.id}, function(err, user) {
     if (!err) {
@@ -90,6 +159,7 @@ app.get('/api/auth/:id', function(req, res){
     }
   });
 });
+
 app.put('/api/users/:id', function(req, res){
   return User.findById(req.params.id, function(err, user) {
     user.email = req.body.email;
@@ -106,6 +176,7 @@ app.put('/api/users/:id', function(req, res){
     });
   });
 });
+
 app.post('/api/users', function(req, res){
   var user;
   user = new User({
@@ -123,6 +194,7 @@ app.post('/api/users', function(req, res){
   });
   return res.send(user);
 });
+
 app.delete('/api/users/:id', function(req, res){
   return User.findById(req.params.id, function(err, user) {
     return user.remove(function(err) {
@@ -133,6 +205,26 @@ app.delete('/api/users/:id', function(req, res){
     });
   });
 });
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
+
+/*
+elasticSearchClient.search('poems', 'poem', {"query" : { "query_string" : {"query" : "Wojaczek"}}})
+  .on('data', function(data) {
+      console.log(data);
+      results = JSON.parse(data)['hits']
+      for(i = 0; i < 10; i++){
+        console.log(results['hits'][i])
+      }
+
+  })
+  .on('done', function(){
+      //always returns 0 right now
+  })
+  .on('error', function(error){
+      console.log(error)
+  })
+  .exec()
+*/

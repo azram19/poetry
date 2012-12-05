@@ -5,7 +5,7 @@ class User extends Backbone.Model
     last_name: "cat"
     id: "-1"
     username: "cat"
-    poems: []
+    poems: "-1"
 
   idAttribute: "_id"
   urlRoot : '/api/users'

@@ -18,8 +18,10 @@ class Poetry
           else
             null
         "true": ( event, user ) ->
+          console.log "user authorized"
           self.user = new window.Poetry.User user
           $.when( self.checkUser user.id, self.user ).then ( old ) ->
+            console.log "old", old
             if old
               self.user.fetch success: () -> self.view.render()
             else
@@ -39,7 +41,9 @@ class Poetry
 
     @view = new window.Poetry.Views['poetry'] channel:@channel
 
-    ((@modules[moduleName] = new moduleClass channel:@channel) for moduleName, moduleClass of window.Poetry.Modules)
+    (
+      @modules[moduleName] = new moduleClass channel:@channel
+    ) for moduleName, moduleClass of window.Poetry.Modules
 
     @mediator.start()
 
@@ -48,7 +52,7 @@ class Poetry
     @channel.trigger "authorize:is"
   checkUser: (facebookId, user) =>
     fbUserDefer = $.Deferred()
-
+    console.log "check user"
     $.getJSON( "/api/auth/#{ facebookId }").then ( res ) =>
       if res and res.email is user.get("email") and user.get("id") is res.id
         fbUserDefer.resolve true
@@ -57,6 +61,6 @@ class Poetry
 
     fbUserDefer.promise()
   start: =>
-    Backbone.history.start();
+    Backbone.history.start()
 
 window.Poetry.Poetry = Poetry
