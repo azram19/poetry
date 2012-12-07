@@ -50,6 +50,7 @@ class Poetry
     new window.Poetry.Router channel:@channel
 
     @channel.trigger "authorize:is"
+
   checkUser: (facebookId, user) =>
     fbUserDefer = $.Deferred()
     console.log "check user"
@@ -60,6 +61,7 @@ class Poetry
         fbUserDefer.resolve false
 
     fbUserDefer.promise()
+
   start: =>
     Backbone.history.start()
 

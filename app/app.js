@@ -15,7 +15,7 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 var ElasticSearchClient = require('elasticsearchclient');
-var connectionString = url.parse('http://api.searchbox.io/api-key/<key>');
+var connectionString = url.parse('http://api.searchbox.io/api-key/<>');
 
 var serverOptions = {
     host:connectionString.hostname,
@@ -26,7 +26,7 @@ var elasticSearchClient = new ElasticSearchClient(serverOptions);
 var app = express();
 var hbs = require('hbs');
 
-mongoose.connect('<connection_string>');
+mongoose.connect('<>');
 
 var User = mongoose.model('User', new mongoose.Schema({
   email: String,
@@ -103,29 +103,47 @@ app.get('/api/users', function(req, res){
 });
 
 app.get('/api/poems', function(req, res){
-  return Poem.find(function(err, poems) {
-    return res.send(poems);
-  });
-});
+  poemsBLOB = "";
+  if( req.query.action && req.query.action == "search"){
+    return Poem.find(function(err, poems) {
+      return elasticSearchClient.search('poems', 'poem',
+          {
+            "from" : 0,
+            "size" : 10,
+            "query" : {
+              "query_string" : {
+                "query" : req.query.q
+              }
+            }
+          }
+        )
+        .on('data', function(data) {
+          poemsBLOB += data;
+        })
+        .on('done', function(d){
 
-app.get('/api/poems/search', function(req, res){
-  return Poem.find(function(err, poems) {
-    return elasticSearchClient.search('poems', 'poem',
-        {"query" : { "query_string" : {"query" : req.query.q}}}
-      )
-      .on('data', function(data) {
-          console.log(data);
-          return res.send(data);
-      })
-      .on('done', function(){
-          return res.send({});
-      })
-      .on('error', function(error){
-          console.log(error)
-          return res.send({});
-      })
-      .exec()
-  });
+          poems = JSON.parse( poemsBLOB )["hits"]["hits"];
+
+          for(i=0;i<poems.length;i++){
+            content = poems[i]["_source"]["content"];
+            if(content.length > 128){
+              poems[i]["_source"]["content"] = content.slice(0, 128) + "\n...";
+            }
+          }
+          console.log(poems);
+          return res.send(poems);
+        })
+        .on('error', function(error){
+            console.log( error )
+            return res.send({});
+        })
+        .exec()
+    });
+  } else {
+    return Poem.find(function(err, poems) {
+      return res.send(poems);
+    });
+  }
 });
 
 app.get('/api/poems/:id', function(req, res){

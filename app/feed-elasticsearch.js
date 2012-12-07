@@ -1,6 +1,6 @@
 var url = require('url');
 var mongoose = require('mongoose');
-var connectionString = url.parse('http://api.searchbox.io/api-key/<key>');
+var connectionString = url.parse('http://api.searchbox.io/api-key/<>');
 mongoose.connect('<connection_string>');
 
 var Poem = mongoose.model('Poem', new mongoose.Schema({
